@@ -32,8 +32,8 @@ public class BoardStateTranslator implements NoBatchifyTranslator<float[], Class
      */
     @Override
     public Classifications processOutput(TranslatorContext ctx, NDList list) {
-        NDArray array = list.get(0);
-        NDArray pred = array.softmax(-1);
+        NDArray logits = list.get(0);
+        NDArray pred = logits.softmax(-1);
         List<String> labels = new ArrayList<>();
         labels.add("Player1Win");
         labels.add("Player2Win");

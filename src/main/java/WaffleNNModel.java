@@ -1,3 +1,4 @@
+import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
@@ -23,6 +24,7 @@ import ai.djl.basicdataset.tabular.CsvDataset;
 import org.apache.commons.csv.CSVFormat;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +36,7 @@ public class WaffleNNModel {
     private static NDManager manager = NDManager.newBaseManager();
 
     public static int BOARD_SIZE = 64;
-    // There's two classifications, player 1 wins and player 2 wins.
+    // There's two classifications: player 1 wins and player 2 wins.
     public static int NUM_CLASSES = 2;
 
     private static String MODEL_NAME = "checkers-mlp";
@@ -96,7 +98,7 @@ public class WaffleNNModel {
         model.close();
     }
 
-    public static void storeBoardState(WaffleState state) {
+    public static void storeBoardState(WaffleState state, double boardEval) {
         if (!CSV_PATH.toFile().exists()) {
             try (FileWriter writer = new FileWriter(CSV_PATH.toFile(), false)) {
                 String[] header = new String[BOARD_SIZE];
@@ -121,6 +123,7 @@ public class WaffleNNModel {
             row = row.substring(1, row.length() - 1);
             row = row.replaceAll(" ", "");
             writer.write(row);
+            writer.write("," + boardEval);
         } catch (Throwable t) {
             throw new IllegalStateException("Failed to write to training csv", t);
         }
